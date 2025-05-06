@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ApiService, ApiConfig } from './shared/api.service';
+import { Injectable } from '@angular/core';
+import { ApiService } from './shared/api.service';
 
 export interface Person {
   id?: number;

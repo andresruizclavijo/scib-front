@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -7,14 +7,14 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterOutlet } from '@angular/router';
+import { PeopleService, Person } from './people.service';
 import {
   DataTableComponent,
   TableConfig,
 } from './shared/components/data-table/data-table.component';
 import { SharedModule } from './shared/shared.module';
-import { PeopleService, Person } from './people.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +31,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   providers: [],
 })
 export class AppComponent implements OnInit {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   title = 'scib-front';
   userForm: FormGroup;
   isDragging = false;
@@ -155,12 +157,19 @@ export class AppComponent implements OnInit {
         .subscribe({
           next: () => {
             this.listData();
-            this.userForm.reset();
             this.selectedFile = null;
-            // TODO: clean form inputs
+            this.userForm.reset();
+            this.userForm.markAsUntouched();
+            this.userForm.markAsPristine();
+            if (this.fileInput) {
+              this.fileInput.nativeElement.files = null;
+              this.fileInput.nativeElement.value = '';
+            }
           },
           error: (err) => this.showError(err),
-          complete: () => this.showSnackBar('The person has been saved'),
+          complete: () => {
+            this.showSnackBar('The person has been saved');
+          },
         });
     }
   }
